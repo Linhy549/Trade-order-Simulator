@@ -5,6 +5,7 @@ import com.example.model.Order;
 import com.example.model.OrderType;
 import com.example.model.Trade;
 import com.example.service.OrderService;
+import com.example.util.TradeExporter;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,7 +23,7 @@ public class OrderSimulationTest {
         OrderService orderService = new OrderService(mockProducer);
         Random random = new Random();
 
-        int totalOrders = 1000;
+        int totalOrders = 100000;
 
         for (int i = 0; i < totalOrders; i++) {
             OrderType type = random.nextBoolean() ? OrderType.BUY : OrderType.SELL;
@@ -36,6 +37,8 @@ public class OrderSimulationTest {
         }
 
         List<Trade> trades = orderService.getExecutedTrades();
+        String filePath = System.getProperty("user.dir") + "/trades.csv";
+        TradeExporter.exportToCSV(trades, filePath);
         System.out.println("Total executed trades: " + trades.size());
         System.out.println("Remaining BUY orders: " + orderService.getOpenBuyOrders().size());
         System.out.println("Remaining SELL orders: " + orderService.getOpenSellOrders().size());
