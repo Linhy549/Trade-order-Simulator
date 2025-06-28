@@ -20,7 +20,6 @@ public class Order {
 
     }
 
-    // Constructors, Getters, Setters
 
     public String getOrderId() {
         return orderId;

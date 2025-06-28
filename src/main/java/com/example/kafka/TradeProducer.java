@@ -2,7 +2,9 @@ package com.example.kafka;
 
 import com.example.model.Trade;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
 
+@Service 
 public class TradeProducer {
     private static final String TOPIC = "trades";
 
@@ -13,6 +15,8 @@ public class TradeProducer {
     }
 
     public void sendTrade(Trade trade) {
+    	System.out.println("SendTrade method being called ...");
         kafkaTemplate.send(TOPIC, trade.getTradeId(), trade);
+        
     }
 }

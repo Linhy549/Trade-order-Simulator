@@ -4,6 +4,8 @@ import com.example.kafka.TradeProducer;
 import com.example.model.Order;
 import com.example.model.OrderType;
 import com.example.model.Trade;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,15 +19,16 @@ public class OrderService {
     private final PriorityQueue<Order> buyOrders;
     private final PriorityQueue<Order> sellOrders;
     private final List<Trade> executedTrades;
+    private final TradeProducer tradeProducer;
 
-    public OrderService() {
+    @Autowired
+    public OrderService(TradeProducer tradeProducer) {
         buyOrders = new PriorityQueue<>(
                 (o1, o2) -> {
                     int priceCmp = Double.compare(o2.getPrice(), o1.getPrice());
                     return priceCmp != 0 ? priceCmp : o1.getTimestamp().compareTo(o2.getTimestamp());
                 });
 
-        // Sell orders: lowest price first (min-heap)
         sellOrders = new PriorityQueue<>(
                 (o1, o2) -> {
                     int priceCmp = Double.compare(o1.getPrice(), o2.getPrice());
@@ -33,6 +36,7 @@ public class OrderService {
                 });
 
         executedTrades = new ArrayList<Trade>();
+		this.tradeProducer = tradeProducer;
     }
 
     public void processOrder(Order order) {
@@ -57,10 +61,9 @@ public class OrderService {
                     tradeQty,
                     LocalDateTime.now());
             executedTrades.add(trade);
+            tradeProducer.sendTrade(trade); 
+            System.out.println("Sent trade to Kafka: " + trade.getTradeId());
 
-            // (Upcoming) publishTradeToKafka(trade);
-
-            // Adjust order quantities
             buyOrder.setQuantity(buyOrder.getQuantity() - tradeQty);
             sellOrder.setQuantity(sellOrder.getQuantity() - tradeQty);
 
@@ -88,10 +91,8 @@ public class OrderService {
                     tradeQty,
                     LocalDateTime.now());
             executedTrades.add(trade);
-
-            // (Upcoming) publishTradeToKafka(trade);
-
-            // Adjust order quantities
+            tradeProducer.sendTrade(trade); 
+            System.out.println("Sent trade to Kafka: " + trade.getTradeId());
             buyOrder.setQuantity(buyOrder.getQuantity() - tradeQty);
             sellOrder.setQuantity(sellOrder.getQuantity() - tradeQty);
 
