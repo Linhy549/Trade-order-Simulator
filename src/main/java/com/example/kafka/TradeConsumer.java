@@ -9,6 +9,6 @@ public class TradeConsumer {
 
 	@KafkaListener(topics = "trades", groupId = "trading-group")
 	public void listen(Trade trade) {
-	    System.out.println("Received trade: " + trade);
+	    System.out.println("Received trade: " + trade.toString());
 	}
 }

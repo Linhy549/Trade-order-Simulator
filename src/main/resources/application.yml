@@ -1,9 +1,21 @@
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/trading
+    username: postgres
+    password: linhy549
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+      format_sql: true
+
   kafka:
     bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
       properties:
-        spring.json.trusted.packages: "com.example.model"  # your Trade class package
+        spring.json.trusted.packages: "com.example.model" 
         spring.json.value.default.type: "com.example.model.Trade"

@@ -2,7 +2,13 @@ package com.example.model;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+@Entity
+@Table(name = "trades")
 public class Trade {
+	@Id
     private String tradeId;
     private String buyOrderId;
     private String sellOrderId;
@@ -38,4 +44,11 @@ public class Trade {
 
     public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+
+	@Override
+	public String toString() {
+		return "Trade [tradeId=" + tradeId + ", buyOrderId=" + buyOrderId + ", sellOrderId=" + sellOrderId + ", price="
+				+ price + ", quantity=" + quantity + ", timestamp=" + timestamp + "]";
+	}
+    
 }

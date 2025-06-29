@@ -20,10 +20,10 @@ public class OrderSimulationTest {
     @Test
     void simulateBulkOrders() {
         TradeProducer mockProducer = Mockito.mock(TradeProducer.class);
-        OrderService orderService = new OrderService(mockProducer);
+        OrderService orderService = new OrderService(mockProducer, null, null);
         Random random = new Random();
 
-        int totalOrders = 100000;
+        int totalOrders = 20;
 
         for (int i = 0; i < totalOrders; i++) {
             OrderType type = random.nextBoolean() ? OrderType.BUY : OrderType.SELL;

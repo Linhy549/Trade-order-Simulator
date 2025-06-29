@@ -22,7 +22,7 @@ public class OrderServiceTest {
     @BeforeEach
     void setup() {
         tradeProducer = Mockito.mock(TradeProducer.class);
-        orderService = new OrderService(tradeProducer);
+        orderService = new OrderService(tradeProducer, null, null);
     }
 
     @Test

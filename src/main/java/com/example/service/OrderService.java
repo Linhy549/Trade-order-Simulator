@@ -4,9 +4,12 @@ import com.example.kafka.TradeProducer;
 import com.example.model.Order;
 import com.example.model.OrderType;
 import com.example.model.Trade;
+import com.example.repository.OrderRepository;
+import com.example.repository.TradeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,9 +23,12 @@ public class OrderService {
     private final PriorityQueue<Order> sellOrders;
     private final List<Trade> executedTrades;
     private final TradeProducer tradeProducer;
+    
+    private final TradeRepository tradeRepository;
+    private final OrderRepository orderRepository;
 
     @Autowired
-    public OrderService(TradeProducer tradeProducer) {
+    public OrderService(TradeProducer tradeProducer, TradeRepository tradeRepository, OrderRepository orderRepository) {
         buyOrders = new PriorityQueue<>(
                 (o1, o2) -> {
                     int priceCmp = Double.compare(o2.getPrice(), o1.getPrice());
@@ -37,9 +43,13 @@ public class OrderService {
 
         executedTrades = new ArrayList<Trade>();
 		this.tradeProducer = tradeProducer;
+		this.tradeRepository = tradeRepository;
+		this.orderRepository = orderRepository;
     }
 
     public void processOrder(Order order) {
+    	orderRepository.save(order);
+
         if (order.getType() == OrderType.BUY) {
             matchBuyOrder(order);
         } else {
@@ -61,6 +71,8 @@ public class OrderService {
                     tradeQty,
                     LocalDateTime.now());
             executedTrades.add(trade);
+            
+            tradeRepository.save(trade);           
             tradeProducer.sendTrade(trade); 
             System.out.println("Sent trade to Kafka: " + trade.getTradeId());
 
@@ -91,6 +103,7 @@ public class OrderService {
                     tradeQty,
                     LocalDateTime.now());
             executedTrades.add(trade);
+            tradeRepository.save(trade); 
             tradeProducer.sendTrade(trade); 
             System.out.println("Sent trade to Kafka: " + trade.getTradeId());
             buyOrder.setQuantity(buyOrder.getQuantity() - tradeQty);
@@ -117,4 +130,9 @@ public class OrderService {
     public List<Order> getOpenSellOrders() {
         return new ArrayList<>(sellOrders);
     }
+    
+    public List<Order> findByType(OrderType type) {
+    	return orderRepository.findByType(type);
+    }
+
 }

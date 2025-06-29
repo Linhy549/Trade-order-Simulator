@@ -2,8 +2,17 @@ package com.example.model;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+@Entity
+@Table(name = "orders")
 public class Order {
+	@Id
     private String orderId;
+	@Enumerated(EnumType.STRING)
     private OrderType type;
     private double price;
     private int quantity;
